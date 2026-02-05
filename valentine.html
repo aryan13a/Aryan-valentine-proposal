@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine Proposal</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #ffb6c1, #ff69b4);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            position: relative;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .buttons {
+            margin-top: 30px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 10px;
+            transition: 0.3s;
+        }
+        #yes {
+            background: #32cd32;
+            color: white;
+        }
+        #yes:hover {
+            background: #228b22;
+        }
+        #no {
+            background: #ff4500;
+            color: white;
+            position: absolute;
+        }
+        #no:hover {
+            background: #ff6347;
+        }
+        /* Hide the Formspree form */
+        #responseForm {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1 id="message"></h1>
+        <div class="buttons">
+            <button id="yes">Yes 💕</button>
+            <button id="no">No 😢</button>
+        </div>
+    </div>
+
+    <!-- Hidden Formspree Form -->
+    <form id="responseForm" action="https://formspree.io/f/mojnawzv" method="POST">
+        <input type="hidden" name="name" id="formName">
+        <input type="hidden" name="response" value="Yes">
+        <input type="hidden" name="timestamp" id="formTimestamp">
+        <input type="hidden" name="_subject" value="New Valentine Response! 💖">
+        <input type="hidden" name="_next" value="success.html"> <!-- Redirect after submit -->
+    </form>
+
+    <script>
+        // Get name from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name') || 'Friend';
+        document.getElementById('message').textContent = `${name}, Aryan wants you to be his valentine! Will you say yes?`;
+
+        // No button jumps to random position on hover
+        const noButton = document.getElementById('no');
+        noButton.addEventListener('mouseover', () => {
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = Math.random() * (window.innerHeight - 100);
+            noButton.style.left = `${x}px`;
+            noButton.style.top = `${y}px`;
+        });
+
+        // No button jumps on click (every attempt)
+        noButton.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent any default click behavior
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = Math.random() * (window.innerHeight - 100);
+            noButton.style.left = `${x}px`;
+            noButton.style.top = `${y}px`;
+            alert('Oops! The No button is shy and jumped away! Try again... 😊');
+        });
+
+        // Yes button: Store response locally, submit form to Formspree, and redirect
+        document.getElementById('yes').addEventListener('click', () => {
+            const timestamp = new Date().toLocaleString();
+            
+            // Store in localStorage for admin page
+            const responses = JSON.parse(localStorage.getItem('valentineResponses')) || [];
+            responses.push({ name, response: 'Yes', timestamp });
+            localStorage.setItem('valentineResponses', JSON.stringify(responses));
+            
+            // Fill and submit Formspree form
+            document.getElementById('formName').value = name;
+            document.getElementById('formTimestamp').value = timestamp;
+            document.getElementById('responseForm').submit(); // This sends the email and redirects to success.html
+        });
+    </script>
+</body>
+</html>
